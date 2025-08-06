@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('Bot is alive!'));
 app.listen(port, () => console.log(`Express server running on port ${port}`));
 
-const token = process.env.BOT_TOKEN || '7567384896:AAHBlzaVtx_KXnO2THaepTWw2ne5KcWM6Vk';
+const token = process.env.BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
 if (!token) {
   console.error("❌ BOT_TOKEN not found in environment variables!");
   process.exit(1);
@@ -102,19 +102,18 @@ bot.on('message', (msg) => {
     if (productKey && products[productKey]) {
       const prod = products[productKey];
       currentState.product = productKey;
-      currentState.step = 'awaiting_interest';
+      currentState.step = 'awaiting_method';
 
-      bot.sendMessage(chatId, `💬 *Interested in buying ${prod.name}?*`, {
-        parse_mode: 'Markdown',
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: '✅ Yes', callback_data: 'interested_yes' },
-              { text: '❌ No', callback_data: 'interested_no' }
-            ]
-          ]
-        }
-      });
+      const methodMsg = 
+`✨ You selected: *${prod.name}* — *${formatPrice(prod.price)}*.
+
+Please choose a payment method:
+
+💳 *paypal*  
+🪙 *binance*  
+💼 *checkout*`;
+
+      bot.sendMessage(chatId, methodMsg, { parse_mode: 'Markdown' });
 
     } else {
       bot.sendMessage(chatId, '❌ Invalid product name. Please type exactly as shown.');
@@ -192,49 +191,6 @@ Type /start to make another purchase.`, {
 
     } else {
       bot.sendMessage(chatId, `⌛ Waiting for confirmation. Type *confirm* once payment is sent.`, { parse_mode: 'Markdown' });
-    }
-  }
-});
-
-bot.on('callback_query', (callbackQuery) => {
-  const msg = callbackQuery.message;
-  const chatId = msg.chat.id;
-  const data = callbackQuery.data;
-
-  const currentState = states[chatId];
-  if (!currentState) {
-    return bot.answerCallbackQuery(callbackQuery.id, { text: 'Type /start to begin.' });
-  }
-
-  if (currentState.step === 'awaiting_interest') {
-    if (data === 'interested_yes') {
-      currentState.step = 'awaiting_method';
-      const prod = products[currentState.product];
-
-      const methodMsg = 
-`✨ You selected: *${prod.name}* — *${formatPrice(prod.price)}*.
-
-Please choose a payment method:
-
-💳 *paypal*  
-🪙 *binance*  
-💼 *checkout*`;
-
-      bot.sendMessage(chatId, methodMsg, { parse_mode: 'Markdown' });
-      bot.answerCallbackQuery(callbackQuery.id);
-
-    } else if (data === 'interested_no') {
-      bot.sendMessage(chatId,
-`😌 No problem!
-
-Thanks for checking out our products. You're always welcome back.
-
-🛒 Here are the available products again:`);
-
-      resetState(chatId);
-      bot.answerCallbackQuery(callbackQuery.id);
-
-      bot.emit('text', { chat: { id: chatId }, text: '/start' });
     }
   }
 });
