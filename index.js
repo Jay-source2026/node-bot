@@ -29,7 +29,11 @@ const products = {
   'darkzadie': { name: 'Darkzadie', price: 23, videoPath: 'https://bescontent.shop/Previas/darkzadie.mp4' },
   'desire_garcia': { name: 'Desire Garcia', price: 20, videoPath: 'https://bescontent.shop/Previas/desire_garcia.mp4' },
   'cp1': { name: 'CP1', price: 35, videoPath: 'https://bescontent.shop/Previas/cp1.mp4' },
-  'cp2': { name: 'CP2', price: 38, videoPath: 'https://bescontent.shop/Previas/cp2.mp4' },
+  'cp2': { 
+    name: 'CP2', 
+    price: 38, 
+    videoPath: 'https://bescontent.shop/Previas/cp2.mp4',
+    type: 'remote' ' },
   'cp3': { name: 'CP3', price: 42, videoPath: 'https://bescontent.shop/Previas/cp3.mp4' },
   'cp4': { name: 'CP4', price: 48, videoPath: 'https://bescontent.shop/Previas/cp4.mp4' },
   'baby_ashlee': { name: 'Baby Ashlee', price: 28, videoPath: 'https://bescontent.shop/Previas/babyashlee.mp4' },
@@ -264,4 +268,5 @@ Thanks for checking out our products. You're always welcome back.
     }
   }
 });
+
 
