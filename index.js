@@ -231,7 +231,7 @@ bot.on('callback_query', (callbackQuery) => {
       reply +=
 `💳 *PayPal Payment*
 
-Send to: \`https://www.paypal.com/ncp/payment/FHB2D9HYLWMNU\`
+Send to: \`https://www.paypal.com/ncp/payment/FHB2D9HYLWMNU`
 
 Then type *confirm* once done.`;
     } else if (method === 'binance') {
@@ -264,4 +264,5 @@ Then type *confirm* once done.`;
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
 
