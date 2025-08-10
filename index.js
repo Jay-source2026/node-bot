@@ -125,7 +125,7 @@ function confirmPayment(chatId) {
 Thanks for purchasing *${prod.name}*. 🎉
 
 📩 Please send proof of payment along with the product name to receive your order:
-👉 [Contact Support](https://t.me/vipadminii)
+👉 [Contact Support](https://t.me/oficialsellerr)
 
 📝 Example:  
 \`I paid for ${prod.name}\``, {
@@ -246,7 +246,7 @@ Then type *confirm* once done.`;
       reply +=
 `💼 *Checkout Payment*
 
-[Contact support](https://t.me/vipadminii) to receive your invoice via CashApp / Apple Pay.`;
+[Contact support](https://t.me/@oficialsellerr) to receive your invoice via CashApp / Apple Pay.`;
     }
 
     bot.sendMessage(chatId, reply, { parse_mode: 'Markdown' });
@@ -264,6 +264,7 @@ Then type *confirm* once done.`;
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
 
 
 
