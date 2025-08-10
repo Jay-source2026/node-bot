@@ -25,7 +25,7 @@ app.get('/status', (req, res) => {
 
 app.listen(port, () => console.log(`Express server running on port ${port}`));
 
-const token = process.env.BOT_TOKEN || '7567384896:AAHBlzaVtx_KXnO2THaepTWw2ne5KcWM6Vk';
+const token = process.env.BOT_TOKEN || '8383469663:AAFSuNKKYAalZiBu-ZkE-qgDbnOjy8_RVcQ';
 if (!token) {
   console.error("❌ BOT_TOKEN not found in environment variables!");
   process.exit(1);
@@ -264,6 +264,7 @@ Then type *confirm* once done.`;
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
 
 
 
