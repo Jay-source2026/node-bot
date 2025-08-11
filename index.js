@@ -200,9 +200,9 @@ bot.on('message', (msg) => {
     } else {
       // ❗ Produto não encontrado → mostra link do suporte
       bot.sendMessage(chatId,
-`❌ Produto não encontrado. Verifique se digitou corretamente ou clique em um dos botões.
+`❌ Product not found. Check if you typed it correctly or click one of the buttons.
 
-🛎️ Se precisar de ajuda, fale com nosso suporte: ${SUPPORT_USERNAME}`);
+🛎️ If you need help, contact our support team: ${@oficialsellerr}`);
     }
   } else if (currentState.step === 'awaiting_confirmation') {
     if (text === 'confirm') {
@@ -257,7 +257,7 @@ bot.on('callback_query', (callbackQuery) => {
       reply += `🪙 *Binance Payment*\n\n• BTC: \`bc1qs4wy29fp4jh49x40hcnduatftkewu6nk5da8tk\`  
 • USDT: \`0x8B2Eb4C56dFC583edb11109821212b0bb91faE04\`\n\nThen type *confirm* once done.`;
     } else if (method === 'checkout') {
-      reply += `💼 *Checkout Payment*\n\n[Contact support](https://t.me/${SUPPORT_USERNAME.replace('@', '')}) to receive your invoice via CashApp / Apple Pay.`;
+      reply += `💼 *Checkout Payment*\n\n[Contact support](https://t.me/${'@oficialseller'.replace('@', '')}) to receive your invoice via CashApp / Apple Pay.`;
     }
 
     bot.sendMessage(chatId, reply, { parse_mode: 'Markdown' });
@@ -275,4 +275,5 @@ bot.on('callback_query', (callbackQuery) => {
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
 
