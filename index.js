@@ -1,5 +1,8 @@
-require('dotenv').config();
+// ==========================
+// 🤖 BOT DE VENDAS TELEGRAM
+// ==========================
 
+require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const fs = require('fs');
@@ -7,8 +10,10 @@ const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Página inicial do servidor
 app.get('/', (req, res) => res.send('Bot is alive!'));
 
+// Rota de status (útil para monitoramento)
 app.get('/status', (req, res) => {
   const productFreq = {};
   stats.selectedProducts.forEach(p => {
@@ -23,9 +28,13 @@ app.get('/status', (req, res) => {
   });
 });
 
-app.listen(port, () => console.log(`Express server running on port ${port}`));
+app.listen(port, () => console.log(`🚀 Express server running on port ${port}`));
 
-const token = process.env.BOT_TOKEN || '8383469663:AAFSuNKKYAalZiBu-ZkE-qgDbnOjy8_RVcQ';
+// ==============
+// 🔑 TOKEN DO BOT
+// ==============
+const token = process.env.BOT_TOKEN || 'COLOQUE_SEU_TOKEN_AQUI';
+
 if (!token) {
   console.error("❌ BOT_TOKEN not found in environment variables!");
   process.exit(1);
@@ -33,14 +42,25 @@ if (!token) {
 
 const bot = new TelegramBot(token, { polling: true });
 
-// Estatísticas em tempo real
+// ========================
+// 📊 Estatísticas do Bot
+// ========================
 const stats = {
   activeUsers: new Set(),
   selectedProducts: []
 };
 
+// ============
+// 🔗 LINKS FIXOS
+// ============
+const SUPPORT_USERNAME = '@oficialsellerr'; // Suporte do Telegram
+const GROUP_LINK = 'https://t.me/seugrupo_aqui'; // <-- EDITAR AQUI quando você tiver o link do grupo
+
 console.log('🤖 Bot is running...');
 
+// ====================
+// 📦 Lista de Produtos
+// ====================
 const products = {
   'lizzy_and_bro': { name: 'Lizzy And Bro', price: 25, videoPath: './Previas/lizzy.mp4' },
   'savannah': { name: 'Savannah', price: 30, videoPath: './Previas/savannah.mp4' },
@@ -59,47 +79,32 @@ const products = {
   'izzy': { name: 'Izzy', price: 38, videoPath: './Previas/izzy.mp4' },
 };
 
-const nameToKey = {
-  'lizzy and bro': 'lizzy_and_bro',
-  'savannah': 'savannah',
-  'amelia blonde': 'amelia_blonde',
-  'ivanka and bro': 'ivanka_and_bro',
-  'abbi': 'abbi',
-  'anita': 'anita',
-  'darkzadie': 'darkzadie',
-  'desire garcia': 'desire_garcia',
-  'cp1': 'cp1',
-  'cp2': 'cp2',
-  'cp3': 'cp3',
-  'cp4': 'cp4',
-  'baby ashlee': 'baby_ashlee',
-  'anxious panda': 'anxious_panda',
-  'izzy': 'izzy'
-};
+// Para reconhecer nomes digitados manualmente
+const nameToKey = {};
+Object.keys(products).forEach(key => {
+  nameToKey[products[key].name.toLowerCase()] = key;
+});
 
 const methods = ['paypal', 'binance', 'checkout'];
 const states = {};
 
-// Função para resetar estado do usuário
+// ==============
+// 🔁 Funções Úteis
+// ==============
 function resetState(chatId) {
   states[chatId] = { step: 'awaiting_product' };
 }
 
-// Formata preço
 function formatPrice(value) {
   return `$${value.toFixed(2)}`;
 }
 
-// Função para lidar com seleção de produto (botão ou texto)
 function handleProductSelection(chatId, productKey) {
   const prod = products[productKey];
   states[chatId] = { step: 'awaiting_method', product: productKey };
   stats.selectedProducts.push(productKey);
 
-  const msgText =
-`✨ You selected: *${prod.name}* — *${formatPrice(prod.price)}*
-
-Please choose a payment method below:`;
+  const msgText = `✨ You selected: *${prod.name}* — *${formatPrice(prod.price)}*\n\nPlease choose a payment method below:`;
 
   bot.sendMessage(chatId, msgText, {
     parse_mode: 'Markdown',
@@ -113,7 +118,6 @@ Please choose a payment method below:`;
   });
 }
 
-// Função para confirmar pagamento
 function confirmPayment(chatId) {
   const currentState = states[chatId];
   if (!currentState || !currentState.product) return;
@@ -125,10 +129,10 @@ function confirmPayment(chatId) {
 Thanks for purchasing *${prod.name}*. 🎉
 
 📩 Please send proof of payment along with the product name to receive your order:
-👉 [Contact Support](https://t.me/oficialsellerr)
+👉 [Contact Support](https://t.me/${SUPPORT_USERNAME.replace('@', '')})
 
 📝 Example:  
-\`I paid for ${prod.name}\``, {
+\\I paid for ${prod.name}\\`, {
     parse_mode: 'Markdown',
     disable_web_page_preview: true
   });
@@ -136,7 +140,9 @@ Thanks for purchasing *${prod.name}*. 🎉
   resetState(chatId);
 }
 
-// Comando /start
+// =========================
+// ▶️ Comando /start atualizado
+// =========================
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   resetState(chatId);
@@ -147,20 +153,32 @@ bot.onText(/\/start/, (msg) => {
     callback_data: `product_${nameToKey[p.name.toLowerCase()]}`
   }]);
 
-  const welcomeMsg =
-`👋 Welcome to *Best Services Store*!
+  // Botões de Suporte e Grupo no topo
+  const topButtons = [
+    [
+      { text: '📢 Grupo de Novidades', url: GROUP_LINK },
+      { text: '🛎️ Suporte', url: `https://t.me/${SUPPORT_USERNAME.replace('@', '')}` }
+    ]
+  ];
 
-🛍️ Please choose a product below:`;
+  const welcomeMsg =
+`👋 *Bem-vindo à Best Services Store!*
+
+📦 Escolha um produto abaixo para visualizar as prévias e formas de pagamento.
+
+❓ Se tiver dúvidas, fale conosco pelo botão *Suporte* abaixo.`;
 
   bot.sendMessage(chatId, welcomeMsg, {
     parse_mode: 'Markdown',
     reply_markup: {
-      inline_keyboard: productButtons
+      inline_keyboard: [...topButtons, ...productButtons]
     }
   });
 });
 
-// Mantém mensagens de texto válidas como fallback (caso não use botões)
+// ==============================
+// 💬 Mensagens manuais (fallback)
+// ==============================
 bot.on('message', (msg) => {
   if (!msg.text) return;
 
@@ -180,18 +198,26 @@ bot.on('message', (msg) => {
     if (productKey && products[productKey]) {
       handleProductSelection(chatId, productKey);
     } else {
-      bot.sendMessage(chatId, '❌ Product not found. Please choose from the buttons or type the exact name.');
+      // ❗ Produto não encontrado → mostra link do suporte
+      bot.sendMessage(chatId,
+`❌ Produto não encontrado. Verifique se digitou corretamente ou clique em um dos botões.
+
+🛎️ Se precisar de ajuda, fale com nosso suporte: ${SUPPORT_USERNAME}`);
     }
   } else if (currentState.step === 'awaiting_confirmation') {
     if (text === 'confirm') {
       confirmPayment(chatId);
     } else {
-      bot.sendMessage(chatId, `⌛ Waiting for confirmation. Type *confirm* after sending the payment.`, { parse_mode: 'Markdown' });
+      bot.sendMessage(chatId, `⌛ Waiting for confirmation. Type *confirm* after sending the payment.`, {
+        parse_mode: 'Markdown'
+      });
     }
   }
 });
 
-// Callback query (botões inline)
+// =========================
+// 🔘 Botões Inline Callback
+// =========================
 bot.on('callback_query', (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
   const data = callbackQuery.data;
@@ -223,30 +249,15 @@ bot.on('callback_query', (callbackQuery) => {
 
 • Product: *${prod.name}*  
 • Price: *${formatPrice(prod.price)}*  
-• Payment Method: *${method.toUpperCase()}*
-
-`;
+• Payment Method: *${method.toUpperCase()}*\n\n`;
 
     if (method === 'paypal') {
-      reply +=
-`💳 *PayPal Payment*
-
-[CLICK TO BUY NOW](https://www.paypal.com/ncp/payment/FHB2D9HYLWMNU)
-
-Then type *confirm* once done.`;
+      reply += `💳 *PayPal Payment*\n\n[CLICK TO BUY NOW](https://www.paypal.com/ncp/payment/FHB2D9HYLWMNU)\n\nThen type *confirm* once done.`;
     } else if (method === 'binance') {
-      reply +=
-`🪙 *Binance Payment*
-
-• BTC: \`bc1qs4wy29fp4jh49x40hcnduatftkewu6nk5da8tk\`  
-• USDT: \`0x8B2Eb4C56dFC583edb11109821212b0bb91faE04\`
-
-Then type *confirm* once done.`;
+      reply += `🪙 *Binance Payment*\n\n• BTC: \`bc1qs4wy29fp4jh49x40hcnduatftkewu6nk5da8tk\`  
+• USDT: \`0x8B2Eb4C56dFC583edb11109821212b0bb91faE04\`\n\nThen type *confirm* once done.`;
     } else if (method === 'checkout') {
-      reply +=
-`💼 *Checkout Payment*
-
-[Contact support](https://t.me/@oficialsellerr) to receive your invoice via CashApp / Apple Pay.`;
+      reply += `💼 *Checkout Payment*\n\n[Contact support](https://t.me/${SUPPORT_USERNAME.replace('@', '')}) to receive your invoice via CashApp / Apple Pay.`;
     }
 
     bot.sendMessage(chatId, reply, { parse_mode: 'Markdown' });
@@ -264,12 +275,3 @@ Then type *confirm* once done.`;
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
-
-
-
-
-
-
-
-
-
