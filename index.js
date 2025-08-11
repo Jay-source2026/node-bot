@@ -129,7 +129,7 @@ function confirmPayment(chatId) {
 Thanks for purchasing *${prod.name}*. 🎉
 
 📩 Please send proof of payment along with the product name to receive your order:
-👉 [Contact Support](https://t.me/${SUPPORT_USERNAME.replace('@', '')})
+👉 [Contact Support](https://t.me/${@oficialsellerr.replace('@', '')})
 
 📝 Example:  
 \\I paid for ${prod.name}\\`, {
@@ -156,17 +156,17 @@ bot.onText(/\/start/, (msg) => {
   // Botões de Suporte e Grupo no topo
   const topButtons = [
     [
-      { text: '📢 Grupo de Novidades', url: GROUP_LINK },
-      { text: '🛎️ Suporte', url: `https://t.me/${SUPPORT_USERNAME.replace('@', '')}` }
+      { text: '📢 Previews Group', url: GROUP_LINK },
+      { text: '🛎️ Support', url: `https://t.me/${@oficialsellerr.replace('@', '')}` }
     ]
   ];
 
   const welcomeMsg =
-`👋 *Bem-vindo à Best Services Store!*
+`👋 *Welcome to Best Services Store!*
 
-📦 Escolha um produto abaixo para visualizar as prévias e formas de pagamento.
+📦 Choose a product below to view previews and payment methods.
 
-❓ Se tiver dúvidas, fale conosco pelo botão *Suporte* abaixo.`;
+❓ If you have any questions, contact us using the *Support* button below.`;
 
   bot.sendMessage(chatId, welcomeMsg, {
     parse_mode: 'Markdown',
@@ -275,3 +275,4 @@ bot.on('callback_query', (callbackQuery) => {
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
