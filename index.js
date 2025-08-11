@@ -1,5 +1,5 @@
 // ==========================
-// 🤖 BOT DE VENDAS TELEGRAM
+// 🤖 TELEGRAM SALES BOT
 // ==========================
 
 require('dotenv').config();
@@ -10,10 +10,10 @@ const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Página inicial do servidor
+// Root route
 app.get('/', (req, res) => res.send('Bot is alive!'));
 
-// Rota de status (útil para monitoramento)
+// Status route for monitoring
 app.get('/status', (req, res) => {
   const productFreq = {};
   stats.selectedProducts.forEach(p => {
@@ -31,9 +31,9 @@ app.get('/status', (req, res) => {
 app.listen(port, () => console.log(`🚀 Express server running on port ${port}`));
 
 // ==============
-// 🔑 TOKEN DO BOT
+// 🔑 BOT TOKEN
 // ==============
-const token = process.env.BOT_TOKEN || 'COLOQUE_SEU_TOKEN_AQUI';
+const token = process.env.BOT_TOKEN || 'PASTE_YOUR_TOKEN_HERE';
 
 if (!token) {
   console.error("❌ BOT_TOKEN not found in environment variables!");
@@ -43,7 +43,7 @@ if (!token) {
 const bot = new TelegramBot(token, { polling: true });
 
 // ========================
-// 📊 Estatísticas do Bot
+// 📊 Bot Statistics
 // ========================
 const stats = {
   activeUsers: new Set(),
@@ -51,15 +51,15 @@ const stats = {
 };
 
 // ============
-// 🔗 LINKS FIXOS
+// 🔗 FIXED LINKS
 // ============
-const SUPPORT_USERNAME = '@oficialsellerr'; // Suporte do Telegram
-const GROUP_LINK = 'https://t.me/seugrupo_aqui'; // <-- EDITAR AQUI quando você tiver o link do grupo
+const SUPPORT_USERNAME = '@oficialsellerr'; // Your Telegram support username
+const GROUP_LINK = 'https://t.me/yourgroup_here'; // Replace with your actual group link when ready
 
 console.log('🤖 Bot is running...');
 
 // ====================
-// 📦 Lista de Produtos
+// 📦 Product List
 // ====================
 const products = {
   'lizzy_and_bro': { name: 'Lizzy And Bro', price: 25, videoPath: './Previas/lizzy.mp4' },
@@ -79,7 +79,7 @@ const products = {
   'izzy': { name: 'Izzy', price: 38, videoPath: './Previas/izzy.mp4' },
 };
 
-// Para reconhecer nomes digitados manualmente
+// Used to identify products by name input
 const nameToKey = {};
 Object.keys(products).forEach(key => {
   nameToKey[products[key].name.toLowerCase()] = key;
@@ -89,7 +89,7 @@ const methods = ['paypal', 'binance', 'checkout'];
 const states = {};
 
 // ==============
-// 🔁 Funções Úteis
+// 🔁 Helper Functions
 // ==============
 function resetState(chatId) {
   states[chatId] = { step: 'awaiting_product' };
@@ -128,8 +128,8 @@ function confirmPayment(chatId) {
 
 Thanks for purchasing *${prod.name}*. 🎉
 
-📩 Please send proof of payment along with the product name to receive your order:
-👉 [Contact Support](https://t.me/${@oficialsellerr.replace('@', '')})
+📩 Please send your proof of payment and the product name to our support:
+👉 [Contact Support](https://t.me/${SUPPORT_USERNAME.replace('@', '')})
 
 📝 Example:  
 \\I paid for ${prod.name}\\`, {
@@ -141,7 +141,7 @@ Thanks for purchasing *${prod.name}*. 🎉
 }
 
 // =========================
-// ▶️ Comando /start atualizado
+// ▶️ /start command
 // =========================
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -153,20 +153,20 @@ bot.onText(/\/start/, (msg) => {
     callback_data: `product_${nameToKey[p.name.toLowerCase()]}`
   }]);
 
-  // Botões de Suporte e Grupo no topo
+  // Support and Group buttons at the top
   const topButtons = [
     [
-      { text: '📢 Previews Group', url: GROUP_LINK },
-      { text: '🛎️ Support', url: `https://t.me/${@oficialsellerr.replace('@', '')}` }
+      { text: '📢 Product Group', url: GROUP_LINK },
+      { text: '🛎️ Support', url: `https://t.me/${SUPPORT_USERNAME.replace('@', '')}` }
     ]
   ];
 
   const welcomeMsg =
 `👋 *Welcome to Best Services Store!*
 
-📦 Choose a product below to view previews and payment methods.
+📦 Select a product below to see previews and payment options.
 
-❓ If you have any questions, contact us using the *Support* button below.`;
+❓ If you have questions, click the *Support* button below.`;
 
   bot.sendMessage(chatId, welcomeMsg, {
     parse_mode: 'Markdown',
@@ -177,7 +177,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 // ==============================
-// 💬 Mensagens manuais (fallback)
+// 💬 Text fallback messages
 // ==============================
 bot.on('message', (msg) => {
   if (!msg.text) return;
@@ -198,11 +198,11 @@ bot.on('message', (msg) => {
     if (productKey && products[productKey]) {
       handleProductSelection(chatId, productKey);
     } else {
-      // ❗ Produto não encontrado → mostra link do suporte
+      // 🔴 Product not found → show support link
       bot.sendMessage(chatId,
-`❌ Product not found. Check if you typed it correctly or click one of the buttons.
+`❌ Product not found. Please double-check the name or click one of the buttons.
 
-🛎️ If you need help, contact our support team: ${@oficialsellerr}`);
+🛎️ Need help? Contact support: ${SUPPORT_USERNAME}`);
     }
   } else if (currentState.step === 'awaiting_confirmation') {
     if (text === 'confirm') {
@@ -216,7 +216,7 @@ bot.on('message', (msg) => {
 });
 
 // =========================
-// 🔘 Botões Inline Callback
+// 🔘 Inline Button Callbacks
 // =========================
 bot.on('callback_query', (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -257,7 +257,7 @@ bot.on('callback_query', (callbackQuery) => {
       reply += `🪙 *Binance Payment*\n\n• BTC: \`bc1qs4wy29fp4jh49x40hcnduatftkewu6nk5da8tk\`  
 • USDT: \`0x8B2Eb4C56dFC583edb11109821212b0bb91faE04\`\n\nThen type *confirm* once done.`;
     } else if (method === 'checkout') {
-      reply += `💼 *Checkout Payment*\n\n[Contact support](https://t.me/${'@oficialseller'.replace('@', '')}) to receive your invoice via CashApp / Apple Pay.`;
+      reply += `💼 *Checkout Payment*\n\n[Contact support](https://t.me/${SUPPORT_USERNAME.replace('@', '')}) to receive your invoice via CashApp / Apple Pay.`;
     }
 
     bot.sendMessage(chatId, reply, { parse_mode: 'Markdown' });
@@ -275,5 +275,3 @@ bot.on('callback_query', (callbackQuery) => {
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
-
-
