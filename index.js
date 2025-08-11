@@ -54,7 +54,7 @@ const stats = {
 // 🔗 FIXED LINKS
 // ============
 const SUPPORT_USERNAME = '@oficialsellerr'; // Your Telegram support username
-const GROUP_LINK = 'https://t.me/yourgroup_here'; // Replace with your actual group link when ready
+const GROUP_LINK = 'https://t.me/+vvw8Q2wuEbVjNTEx'; // Replace with your actual group link when ready
 
 console.log('🤖 Bot is running...');
 
@@ -275,3 +275,4 @@ bot.on('callback_query', (callbackQuery) => {
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
