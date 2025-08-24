@@ -53,8 +53,8 @@ const stats = {
 // ============
 // 🔗 FIXED LINKS
 // ============
-const SUPPORT_USERNAME = '@oficialsellerr'; // Your Telegram support username
-const GROUP_LINK = 'https://t.me/+8vxbhp8vnI1iNTYx'; // Replace with your actual group link when ready
+const SUPPORT_USERNAME = '@vendospay';
+const GROUP_LINK = 'https://t.me/+JPyEZ5JQ1h4zYmY5';
 
 console.log('🤖 Bot is running...');
 
@@ -79,13 +79,12 @@ const products = {
   'izzy': { name: 'Izzy', price: 38, videoPath: './Previas/izzy.mp4' },
 };
 
-// Used to identify products by name input
 const nameToKey = {};
 Object.keys(products).forEach(key => {
   nameToKey[products[key].name.toLowerCase()] = key;
 });
 
-const methods = ['paypal', 'binance', 'checkout'];
+const methods = ['paypal', 'binance', 'checkout', 'giftcard'];
 const states = {};
 
 // ==============
@@ -112,7 +111,8 @@ function handleProductSelection(chatId, productKey) {
       inline_keyboard: [
         [{ text: '💳 PayPal', callback_data: 'method_paypal' }],
         [{ text: '🪙 Binance', callback_data: 'method_binance' }],
-        [{ text: '💼 Checkout', callback_data: 'method_checkout' }]
+        [{ text: '💼 Checkout', callback_data: 'method_checkout' }],
+        [{ text: '🎁 Gift Card', callback_data: 'method_giftcard' }]
       ]
     }
   });
@@ -153,7 +153,6 @@ bot.onText(/\/start/, (msg) => {
     callback_data: `product_${nameToKey[p.name.toLowerCase()]}`
   }]);
 
-  // Support and Group buttons at the top
   const topButtons = [
     [
       { text: '📢 Product Group', url: GROUP_LINK },
@@ -194,11 +193,9 @@ bot.on('message', (msg) => {
 
   if (currentState.step === 'awaiting_product') {
     const productKey = nameToKey[text];
-
     if (productKey && products[productKey]) {
       handleProductSelection(chatId, productKey);
     } else {
-      // 🔴 Product not found → show support link
       bot.sendMessage(chatId,
 `❌ Product not found. Please double-check the name or click one of the buttons.
 
@@ -258,6 +255,8 @@ bot.on('callback_query', (callbackQuery) => {
 • USDT: \`0x8B2Eb4C56dFC583edb11109821212b0bb91faE04\`\n\nThen type *confirm* once done.`;
     } else if (method === 'checkout') {
       reply += `💼 *Checkout Payment*\n\n[Contact support](https://t.me/${SUPPORT_USERNAME.replace('@', '')}) to receive your invoice via CashApp / Apple Pay.`;
+    } else if (method === 'giftcard') {
+      reply += `🎁 *Gift Card Payment*\n\nBuy a REWARBLE gift card and send it here (${SUPPORT_USERNAME}) to receive your product.`;
     }
 
     bot.sendMessage(chatId, reply, { parse_mode: 'Markdown' });
@@ -275,5 +274,3 @@ bot.on('callback_query', (callbackQuery) => {
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
-
-
