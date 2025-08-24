@@ -271,6 +271,75 @@ bot.on('callback_query', (callbackQuery) => {
     }
     return bot.answerCallbackQuery(callbackQuery.id);
   }
+  // ========== Gamificação - Sistema de Pontos ===========
+const userPoints = {};
+
+function addPoints(chatId, points) {
+  if (!userPoints[chatId]) userPoints[chatId] = 0;
+  userPoints[chatId] += points;
+}
+
+function checkPoints(chatId) {
+  return userPoints[chatId] || 0;
+}
+
+// Atualize confirmPayment para adicionar pontos
+function confirmPayment(chatId) {
+  const currentState = states[chatId];
+  if (!currentState || !currentState.product) return;
+
+  const prod = products[currentState.product];
+  bot.sendMessage(chatId,
+`✅ *Payment confirmed!*
+
+Thanks for purchasing *${prod.name}*. 🎉
+
+You earned 10 points for this purchase!
+
+📩 Please send your proof of payment and the product name to our support:
+👉 [Contact Support](https://t.me/${SUPPORT_USERNAME.replace('@', '')})`, {
+    parse_mode: 'Markdown',
+    disable_web_page_preview: true
+  });
+
+  addPoints(chatId, 10); // 10 pontos por compra
+  resetState(chatId);
+}
+
+// Comando para o usuário consultar pontos
+bot.onText(/\/points/, (msg) => {
+  const chatId = msg.chat.id;
+  const pts = checkPoints(chatId);
+  bot.sendMessage(chatId, `Você tem *${pts}* pontos acumulados! 🎉`, { parse_mode: 'Markdown' });
+});
+
+
+// ========== Notificações Personalizadas ===========
+
+// Função para enviar broadcast para todos usuários ativos
+function sendBroadcast(message) {
+  stats.activeUsers.forEach(chatId => {
+    bot.sendMessage(chatId, message);
+  });
+}
+
+// Defina seu chatId admin aqui para controle do comando
+const ADMIN_CHAT_ID = 123456789; // substitua pelo seu Telegram chatId
+
+// Comando para enviar promoções (só admin)
+bot.onText(/\/promo (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+  const promoMsg = match[1];
+
+  if (chatId === ADMIN_CHAT_ID) {
+    sendBroadcast(`🎉 PROMOÇÃO: ${promoMsg}`);
+    bot.sendMessage(chatId, 'Promoção enviada para todos os usuários!');
+  } else {
+    bot.sendMessage(chatId, '❌ Você não tem permissão para usar este comando.');
+  }
+});
+
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
+
