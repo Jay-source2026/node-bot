@@ -128,15 +128,15 @@ function confirmPayment(chatId) {
 
 Thanks for purchasing *${prod.name}*. 🎉
 
-📩 Please send your proof of payment and the product name to our support:
-👉 [Contact Support](https://t.me/${SUPPORT_USERNAME.replace('@', '')})
+You earned 10 points for this purchase!
 
-📝 Example:  
-\\I paid for ${prod.name}\\`, {
+📩 Please send your proof of payment and the product name to our support:
+👉 [Contact Support](https://t.me/${SUPPORT_USERNAME.replace('@', '')})`, {
     parse_mode: 'Markdown',
     disable_web_page_preview: true
   });
 
+  addPoints(chatId, 10); // 10 pontos por compra
   resetState(chatId);
 }
 
@@ -249,7 +249,7 @@ bot.on('callback_query', (callbackQuery) => {
 • Payment Method: *${method.toUpperCase()}*\n\n`;
 
     if (method === 'paypal') {
-      reply += `💳 *PayPal Payment*\n\n[CLICK TO BUY NOW](https://www.paypal.com/ncp/payment/FHB2D9HYLWMNU)\n\nThen type *confirm* once done.`;
+      reply += `💳 *PayPal Payment*\n\nPlease send the payment to: \`desiregarciaah@gmail.com\`\n(Pay as family and friends)\n\nThen type *confirm* once done.`;
     } else if (method === 'binance') {
       reply += `🪙 *Binance Payment*\n\n• BTC: \`bc1qs4wy29fp4jh49x40hcnduatftkewu6nk5da8tk\`  
 • USDT: \`0x8B2Eb4C56dFC583edb11109821212b0bb91faE04\`\n\nThen type *confirm* once done.`;
@@ -342,4 +342,3 @@ bot.onText(/\/promo (.+)/, (msg, match) => {
 
   bot.answerCallbackQuery(callbackQuery.id);
 });
-
